@@ -27,7 +27,7 @@ const sendajax = async skulist => {
         data.skulist = skulist;
         console.log("data--->", data);
         console.table(skulist);
-        if (skulist.length > 0  && skulist[0].sprice1 >= "0") { 
+        if (skulist.length > 0 && skulist[0].sprice1 >= "0") {
             let jsondata = await JSON.stringify(data);
             await fetch("//www.asiathemall.com/tmallgetprice/tmallres.php", {
                     method: "post",
@@ -96,8 +96,14 @@ const initdata = async() => {
             if (skulist && $ar1length > 0 && $ar2length > 0 && $ar3length > 0) {
                 for (let i = 0; i < $ar1.length; i++) {
                     await $ar1[i].click();
+                    await getCoffee();
+                    await getCoffee();
+                    await getCoffee();
                     for (let j = 0; j < $ar2.length; j++) {
                         await $ar2[j].click();
+                        await getCoffee();
+                        await getCoffee();
+                        await getCoffee();
                         for (let k = 0; k < $ar3.length; k++) {
                             await $ar3[k].click();
                             let filtertxt =
@@ -150,16 +156,18 @@ const initdata = async() => {
                                         "#J_PromoPrice > dd > div > span"
                                     ).innerText;
                                 }
-                                if (i == $ar1length && j == $ar2length && k == $ar3length) {
-                                    sendajax(skulist);
-                                }
+                                if (i == $ar1length && j == $ar2length && k == $ar3length) {}
                             }
                         }
                     }
                 }
+                sendajax(skulist);
             } else if (skulist && $ar1length > 0 && $ar2length > 0) {
                 for (let i = 0; i < $ar1.length; i++) {
                     await $ar1[i].click();
+                    await getCoffee();
+                    await getCoffee();
+                    await getCoffee();
                     for (let j = 0; j < $ar2.length; j++) {
                         await $ar2[j].click();
                         let filtertxt = $ar1[i].innerText + " " + $ar2[j].innerText;
@@ -185,17 +193,23 @@ const initdata = async() => {
                             await getCoffee();
                             sprices = await document.querySelectorAll(".tm-price");
                         }
-                        let skufilters = window.location.href
-                            .split("&")
-                            .map(item => item.split("="))
-                            .find(aa => aa[0] == "skuId");
-                        console.log("skufilters==", skufilters);
-                        let filtersku = "";
-                        if (skufilters != undefined && skufilters.length > 0) {
-                            filtersku = skufilters[1];
-                            filtersku = filtersku.substr(0, 13);
+                        if (slist) {
+
+                        } else {
+                            let skufilters = await window.location.href
+                                .split("&")
+                                .map(item => item.split("="))
+                                .find(aa => aa[0] == "skuId");
+                            console.log("skufilters==", skufilters);
+                            let filtersku = "";
+                            if (skufilters != undefined && skufilters.length > 0) {
+                                filtersku = skufilters[1];
+                                filtersku = await filtersku.substr(0, 13);
+                                slist = await skulist.find(s => s.skuId.indexOf(filtersku) > -1);
+                            }
                         }
                         if (slist) {
+
                             for (let l = 0; l < sprices.length; l++) {
                                 console.log(i, "/", j, "/", l, "===>", sprices[l].innerText);
                                 slist["sprice" + l] = await sprices[l].innerText;
@@ -207,15 +221,17 @@ const initdata = async() => {
                                     "#J_PromoPrice > dd > div > span"
                                 ).innerText;
                             }
-                            if (i == $ar1length && j == $ar2length) {
-                                sendajax(skulist);
-                            }
                         }
+
                     }
                 }
+                sendajax(skulist);
             } else if (skulist && $ar1length > 0) {
                 for (let i = 0; i < $ar1.length; i++) {
                     await $ar1[i].click();
+                    await getCoffee();
+                    await getCoffee();
+                    await getCoffee();
                     let filtertxt = $ar1[i].innerText;
                     filtertxt = filtertxt.trim();
                     console.log("filtertxt-->", i, filtertxt);
@@ -263,13 +279,10 @@ const initdata = async() => {
                             ).innerText;
                         }
 
-                        if (i == $ar1length) {
-                            sendajax(skulist);
-                        }
+                        if (i == $ar1length) {}
                     }
                 }
-            } else if ($ar1length == 0 && $ar2length == 0 && $ar3length == 0) {
-                if (skulist) {} else {}
+                sendajax(skulist);
             } else {
                 console.log("---------null-------------");
             }
