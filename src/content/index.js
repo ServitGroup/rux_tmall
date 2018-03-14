@@ -4,252 +4,31 @@ const getCoffee = () => {
         setTimeout(() => resolve("☕"), 1000); // it takes 2 seconds to make coffee
     });
 };
-const initdata = async() => {
-    if (window.location.href.indexOf("tmall.com") > -1) {
-        console.log("tmail website");
-        let html = document.body.innerHTML;
-        let skulist = await html.match(/skuList.*]/);
-        if (skulist) {
-            console.log(
-                "============================== SKULIST =========================================",
-                skulist
-            );
-            skulist = skulist[0].replace('skuList":', "");
-            skulist = JSON.parse(skulist);
-
-            let skumaps = await html.match(/skuMap":.*}}/);
-            skumaps = await skumaps[0].replace('skuMap":', "");
-            skumaps = await skumaps.replace("}}}", "}}");
-            skumaps = await JSON.parse(skumaps);
-            await skulist.map(s => {
-                let map = skumaps[";" + s.pvs + ";"];
-                s.price = map.price;
-                s.stock = map.stock;
-                s.priceCent = map.priceCent;
-                s.saleprice = 0;
-                s.id = "";
-                s.url = "";
-            });
-            // let lista = await document.querySelectorAll(
-            //     "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl.tb-prop.tm-sale-prop.tm-clear.tm-img-prop > dd > ul *> a"
-            // );
-            // let lista = await document.querySelectorAll('.J_TSaleProp *> a ');
-
-            let topslength = await document.querySelectorAll(
-                "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(2) > dd > ul >li"
-            ).length;
-
-            if (topslength > 0) {
-                let tops = await document.querySelectorAll(
-                    "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(1) > dd > ul * > a "
-                );
-                let lista = await document.querySelectorAll(
-                    "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(2) > dd > ul * > a "
-                );
-
-                console.log("-----tops-----------");
-                console.table(tops);
-
-                ///---------iiiiiiiiiiiiiiiiiiiiii----------------------
-                for (let i = 0; i < tops.length; i++) {
-                    console.log("top", i, tops[i].href);
-                    await tops[i].click();
-                    await getCoffee();
-                    //--------------jjjjjjjjjjjjj---------------------------
-                    for (let j = 0; j < lista.length; j++) {
-                        console.log("list->", j, lista[j].href);
-                        await lista[j].click();
-                        await getCoffee();
-                        await getCoffee();
-                        await getCoffee();
-                        let sprices = await document.querySelectorAll(".tm-price");
-                        let chk = 0;
-                        if (sprices.length > 0) {
-                            //------------------kkkkkkkkkkkkkkkkkk--------------------------
-                            for (let k = 0; k < sprices.length; k++) {
-                                console.log(sprices[k].innerText);
-                                if (sprices[k].innerText.indexOf("-") > -1) {
-                                    chk = 1;
-                                }
-                            }
-                            if (chk) {
-                                lista[i].click();
-                                await getCoffee();
-                                await getCoffee();
-                                await getCoffee();
-                                sprices = await document.querySelectorAll(".tm-price");
-                            }
-
-                            let num = lista[j].children[0].innerText;
-                            let ttt = tops[i].innerText;
-                            let filtertext = ttt + " " + num;
-                            let skufilters = lista[j].href
-                                .split("&")
-                                .map(item => item.split("="))
-                                .find(aa => aa[0] == "skuId");
-                            console.log("skufilters==", skufilters);
-                            let filtersku = "";
-                            if (skufilters.length > 0) {
-                                filtersku = skufilters[1];
-                                filtersku = filtersku.substr(0, 13);
-                            }
-
-                            console.log("filtertext ===>", filtertext);
-                            console.log("filtersku ===>", filtersku);
-
-                            let slist = skulist.find(
-                                r =>
-                                r.names.indexOf(filtertext) > -1 &&
-                                r.skuId.indexOf(filtersku) > -1
-                            );
-                            console.log("slist ---->", slist);
-                            if (slist) {
-                                for (let l = 0; l < sprices.length; l++) {
-                                    console.log(i, "/", j, "/", l, "===>", sprices[l].innerText);
-                                    slist["sprice" + l] = await sprices[l].innerText;
-                                    await getCoffee();
-                                }
-
-                                if (slist["sprice1"] == 0) {
-                                    slist["sprice1"] = await document.querySelector(
-                                        "#J_PromoPrice > dd > div > span"
-                                    ).innerText;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                let lista = await document.querySelectorAll(
-                    "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(1) > dd > ul *> a"
-                );
-                console.log("sku---", skulist);
-                window.skulist = skulist;
-                console.log("skulist-->", window.skulist);
-
-                //--------------iiiiiiii--------------------------
-                for (let i = 0; i < lista.length; i++) {
-                    if (lista[i].href != undefined) {
-                        skulist[i].url = lista[i].href;
-                    } else {
-                        skulist[i].url = "";
-                    }
-                    lista[i].click();
-                    await getCoffee();
-                    await getCoffee();
-                    let sprices = await document.querySelectorAll(".tm-price");
-                    let chk = 0;
-                    if (sprices.length > 0) {
-                        //-----------------kkkkkkkkkkkk--------------------------------
-                        for (let k = 0; k < sprices.length; k++) {
-                            console.log(sprices[k].innerText);
-                            if (sprices[k].innerText.indexOf("-") > -1) {
-                                chk = 1;
-                            }
-                        }
-
-                        if (chk) {
-                            lista[i].click();
-                            await getCoffee();
-                            await getCoffee();
-                            await getCoffee();
-                            sprices = await document.querySelectorAll(".tm-price");
-                        }
-
-                        for (let j = 0; j < sprices.length; j++) {
-                            console.log(i, "/", j, "===>", sprices[j].innerText);
-                            skulist[i]["sprice" + j] = await sprices[j].innerText;
-                            await getCoffee();
-                        }
-
-                        if (skulist[i]["sprice1"] == 0) {
-                            skulist[i]["sprice1"] = await document.querySelector(
-                                "#J_PromoPrice > dd > div > span"
-                            ).innerText;
-                        }
-                    }
-                }
+const sendajax = async skulist => {
+    if (skulist) {
+        console.log(
+            "--------------------------start ajax---------------------------------------"
+        );
+        console.log(
+            "+++++++++++++++++++++++++++++++SKULIST++++++++++++++++++++++++++++++++++++++++",
+            skulist
+        );
+        let data = {};
+        data.baseurl = window.location.href.split("&")[0].split("?")[0];
+        let urls = window.location.href.split("&");
+        for (let u of urls) {
+            if (u.indexOf("id") == 0) {
+                data.baseid = await u.split("=")[1];
             }
-            if (skulist) {
-                console.log(
-                    "+++++++++++++++++++++++++++++++SKULIST++++++++++++++++++++++++++++++++++++++++",
-                    skulist
-                );
-                let data = {};
-                data.test = 2;
-                data.baseurl = window.location.href.split("&")[0].split("?")[0];
-                let urls = window.location.href.split("&");
-                for (let u of urls) {
-                    if (u.indexOf("id") == 0) {
-                        data.baseid = u.split("=")[1];
-                    }
-                }
-                if (data.baseid == undefined) {
-                    data.baseid = urls[0].split("?")[1].split("=")[1];
-                }
-                console.log("data--->", data);
-                data.skulist = skulist;
-                console.table(skulist);
-                let jsondata = await JSON.stringify(data);
-                await fetch("//www.asiathemall.com/tmallgetprice/tmallres.php", {
-                        method: "post",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: jsondata
-                    })
-                    .then(r => {
-                        // alert(JSON.stringify(data))
-                        alert("successed");
-                    })
-                    .catch(error => {
-                        console.log("error------featch", e);
-                    });
-            }
-        } else {
-            console.log("--------------no---skulist-------------------------------");
-            let data = {};
-            data.skulist = [];
-            let skulist = {
-                skuId: "-",
-                names: await document.querySelector(
-                    "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-detail-hd > *"
-                ).innerText,
-                url: window.location.href,
-                pvs: "-",
-                price: "0",
-                stock: "0",
-                skuId: "-"
-            };
-            data.baseurl = await window.location.href.split("&")[0].split("?")[0];
-            let urls = await window.location.href.split("&");
-            for (let u of urls) {
-                if (u.indexOf("id") == 0) {
-                    data.baseid = u.split("=")[1];
-                }
-            }
-
-            if (data.baseid == undefined) {
-                data.baseid = await urls[0].split("?")[1].split("=")[1];
-            }
-
-            let sprices = [];
-            // await setTimeout(function() {
-            await getCoffee();
-            sprices = await document.querySelectorAll(".tm-price");
-            console.log("sprices-->", sprices);
-            // }, 200);
-
-            for (let j = 0; j < sprices.length; j++) {
-                console.log(j, "===>", sprices[j].innerText);
-                skulist["sprice" + j] = sprices[j].innerText;
-            }
-
-            await data.skulist.push(skulist);
-            await console.log("data------>", data);
+        }
+        if (data.baseid == undefined) {
+            data.baseid = await urls[0].split("?")[1].split("=")[1];
+        }
+        data.skulist = skulist;
+        console.log("data--->", data);
+        console.table(skulist);
+        if (skulist.length > 0  && skulist[0].sprice1 >= "0") { 
             let jsondata = await JSON.stringify(data);
-            await console.log("start-----fetch-------------------->", jsondata);
             await fetch("//www.asiathemall.com/tmallgetprice/tmallres.php", {
                     method: "post",
                     headers: {
@@ -269,10 +48,286 @@ const initdata = async() => {
     }
 };
 
+const initdata = async() => {
+    if (window.location.href.indexOf("tmall.com") > -1) {
+        console.log("tmail website");
+        let html = await document.body.innerHTML;
+        var skulist = await html.match(/skuList.*]/);
+        if (skulist) {
+            console.log(
+                "============================== SKULIST =========================================",
+                skulist
+            );
+
+            skulist = await skulist[0].replace('skuList":', "");
+            skulist = await JSON.parse(skulist);
+
+            let skumaps = await html.match(/skuMap":.*}}/);
+            skumaps = await skumaps[0].replace('skuMap":', "");
+            skumaps = await skumaps.replace("}}}", "}}");
+            skumaps = await JSON.parse(skumaps);
+            await skulist.map(s => {
+                let map = skumaps[";" + s.pvs + ";"];
+                s.price = map.price;
+                s.stock = map.stock;
+                s.priceCent = map.priceCent;
+                s.saleprice = 0;
+                s.id = "";
+                s.url = "";
+            });
+        }
+
+        let $ar1 = await document.querySelectorAll(
+            "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(1) > dd > ul *> a"
+        );
+        let $ar2 = await document.querySelectorAll(
+            "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(2) > dd > ul *> a"
+        );
+        let $ar3 = await document.querySelectorAll(
+            "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(3) > dd > ul *> a"
+        );
+
+        const $ar1length = await $ar1.length;
+        const $ar2length = await $ar2.length;
+        const $ar3length = await $ar3.length;
+        let send = 0;
+        if (skulist) {
+            console.log("skulist-->", $ar1length, $ar2length, $ar3length, skulist);
+            if (skulist && $ar1length > 0 && $ar2length > 0 && $ar3length > 0) {
+                for (let i = 0; i < $ar1.length; i++) {
+                    await $ar1[i].click();
+                    for (let j = 0; j < $ar2.length; j++) {
+                        await $ar2[j].click();
+                        for (let k = 0; k < $ar3.length; k++) {
+                            await $ar3[k].click();
+                            let filtertxt =
+                                $ar1[i].innerText +
+                                " " +
+                                $ar2[j].innerText +
+                                " " +
+                                $ar3[k].innerText;
+                            filtertxt = filtertxt.trim();
+                            console.log("filtertxt-->", i, "/", j, "/", k, filtertxt);
+                            let slist = skulist.find(s => s.names.indexOf(filtertxt) > -1);
+                            console.log("slist-->", slist);
+                            await getCoffee();
+                            await getCoffee();
+                            await getCoffee();
+                            let sprices = await document.querySelectorAll(".tm-price");
+                            let chk = 0;
+                            for (let z = 0; z < sprices.length; z++) {
+                                console.log(sprices[z].innerText);
+                                if (sprices[z].innerText.indexOf("-") > -1) {
+                                    chk = 1;
+                                }
+                            }
+                            if (chk) {
+                                await $ar3[k].click();
+                                await getCoffee();
+                                await getCoffee();
+                                await getCoffee();
+                                sprices = await document.querySelectorAll(".tm-price");
+                            }
+                            let skufilters = window.location.href
+                                .split("&")
+                                .map(item => item.split("="))
+                                .find(aa => aa[0] == "skuId");
+                            console.log("skufilters==", skufilters);
+                            let filtersku = "";
+                            if (skufilters != undefined && skufilters.length > 0) {
+                                filtersku = skufilters[1];
+                                filtersku = filtersku.substr(0, 13);
+                            }
+                            if (slist) {
+                                for (let l = 0; l < sprices.length; l++) {
+                                    console.log(i, "/", j, "/", l, "===>", sprices[l].innerText);
+                                    slist["sprice" + l] = await sprices[l].innerText;
+                                    await getCoffee();
+                                }
+
+                                if (slist["sprice1"] == 0) {
+                                    slist["sprice1"] = await document.querySelector(
+                                        "#J_PromoPrice > dd > div > span"
+                                    ).innerText;
+                                }
+                                if (i == $ar1length && j == $ar2length && k == $ar3length) {
+                                    sendajax(skulist);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (skulist && $ar1length > 0 && $ar2length > 0) {
+                for (let i = 0; i < $ar1.length; i++) {
+                    await $ar1[i].click();
+                    for (let j = 0; j < $ar2.length; j++) {
+                        await $ar2[j].click();
+                        let filtertxt = $ar1[i].innerText + " " + $ar2[j].innerText;
+                        filtertxt = filtertxt.trim();
+                        console.log("filtertxt-->", i, "/", j, "=", filtertxt);
+                        let slist = skulist.find(s => s.names.indexOf(filtertxt) > -1);
+                        console.log("slist-->", slist);
+                        await getCoffee();
+                        await getCoffee();
+                        await getCoffee();
+                        let sprices = await document.querySelectorAll(".tm-price");
+                        let chk = 0;
+                        for (let z = 0; z < sprices.length; z++) {
+                            console.log(sprices[z].innerText);
+                            if (sprices[z].innerText.indexOf("-") > -1) {
+                                chk = 1;
+                            }
+                        }
+                        if (chk) {
+                            await $ar2[j].click();
+                            await getCoffee();
+                            await getCoffee();
+                            await getCoffee();
+                            sprices = await document.querySelectorAll(".tm-price");
+                        }
+                        let skufilters = window.location.href
+                            .split("&")
+                            .map(item => item.split("="))
+                            .find(aa => aa[0] == "skuId");
+                        console.log("skufilters==", skufilters);
+                        let filtersku = "";
+                        if (skufilters != undefined && skufilters.length > 0) {
+                            filtersku = skufilters[1];
+                            filtersku = filtersku.substr(0, 13);
+                        }
+                        if (slist) {
+                            for (let l = 0; l < sprices.length; l++) {
+                                console.log(i, "/", j, "/", l, "===>", sprices[l].innerText);
+                                slist["sprice" + l] = await sprices[l].innerText;
+                                await getCoffee();
+                            }
+
+                            if (slist["sprice1"] == 0) {
+                                slist["sprice1"] = await document.querySelector(
+                                    "#J_PromoPrice > dd > div > span"
+                                ).innerText;
+                            }
+                            if (i == $ar1length && j == $ar2length) {
+                                sendajax(skulist);
+                            }
+                        }
+                    }
+                }
+            } else if (skulist && $ar1length > 0) {
+                for (let i = 0; i < $ar1.length; i++) {
+                    await $ar1[i].click();
+                    let filtertxt = $ar1[i].innerText;
+                    filtertxt = filtertxt.trim();
+                    console.log("filtertxt-->", i, filtertxt);
+                    let skufilters = window.location.href
+                        .split("&")
+                        .map(item => item.split("="))
+                        .find(aa => aa[0] == "skuId");
+                    console.log("skufilters==", skufilters);
+                    let filtersku = "";
+                    if (skufilters != undefined && skufilters.length > 0) {
+                        filtersku = skufilters[1];
+                        filtersku = filtersku.substr(0, 13);
+                    }
+                    let slist = skulist.find(s => s.skuId.indexOf(filtersku) > -1);
+                    console.log("slist-->", slist);
+                    await getCoffee();
+                    await getCoffee();
+                    await getCoffee();
+                    let sprices = await document.querySelectorAll(".tm-price");
+                    let chk = 0;
+                    for (let z = 0; z < sprices.length; z++) {
+                        console.log(sprices[z].innerText);
+                        if (sprices[z].innerText.indexOf("-") > -1) {
+                            chk = 1;
+                        }
+                    }
+                    if (chk) {
+                        $ar1[i].click();
+                        await getCoffee();
+                        await getCoffee();
+                        await getCoffee();
+                        sprices = await document.querySelectorAll(".tm-price");
+                    }
+
+                    if (slist) {
+                        for (let l = 0; l < sprices.length; l++) {
+                            console.log(i, l, "===>", sprices[l].innerText);
+                            slist["sprice" + l] = await sprices[l].innerText;
+                            await getCoffee();
+                        }
+
+                        if (slist["sprice1"] == 0) {
+                            slist["sprice1"] = await document.querySelector(
+                                "#J_PromoPrice > dd > div > span"
+                            ).innerText;
+                        }
+
+                        if (i == $ar1length) {
+                            sendajax(skulist);
+                        }
+                    }
+                }
+            } else if ($ar1length == 0 && $ar2length == 0 && $ar3length == 0) {
+                if (skulist) {} else {}
+            } else {
+                console.log("---------null-------------");
+            }
+        } else {
+            await getCoffee();
+            await getCoffee();
+            console.log(
+                "--------------no---skulist-------------------------------",
+                $ar1length,
+                $ar2length,
+                $ar3length
+            );
+            // let name = await document.querySelector(
+            //     "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-detail-hd > *"
+            // );
+            // if (name.innerText != undefined) {
+            //     name = await name.innerText;
+            //     console.log("name-->", name);
+            // }
+            let localskulist = {
+                skuId: "-",
+                names: name,
+                url: window.location.href,
+                pvs: "-",
+                price: "0",
+                stock: "0",
+                skuId: "-"
+            };
+
+            let sprices = [];
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            await getCoffee();
+            sprices = await document.querySelectorAll(".tm-price");
+            console.log("sprices-->", sprices);
+            for (let j = 0; j < sprices.length; j++) {
+                localskulist["sprice" + j] = await sprices[j].innerText;
+            }
+
+            skulist = [localskulist];
+            console.log("skulsitarr-->", skulist);
+            sendajax(skulist);
+        }
+
+        return null;
+    }
+};
+
 document.onreadystatechange = async function() {
     console.log("document.readyState---->", document.readyState);
     if (document.readyState == "complete") {
-        await initdata();
+        let skulist = await initdata();
         await console.log(
             "===================== SUCCESSED ============================="
         );
