@@ -4,7 +4,8 @@ const getCoffee = () => {
         setTimeout(() => resolve("☕"), 1000); // it takes 2 seconds to make coffee
     });
 };
-const sendajax = async skulist => {
+
+async function sendajax(skulist) {
     if (skulist) {
         console.log(
             "--------------------------start ajax---------------------------------------"
@@ -27,7 +28,7 @@ const sendajax = async skulist => {
         data.skulist = skulist;
         console.log("data--->", data);
         console.table(skulist);
-        if (skulist.length > 0  && skulist[0].sprice1 >= "0") { 
+        if (skulist.length > 0 && skulist[0].sprice1 >= "0") {
             let jsondata = await JSON.stringify(data);
             await fetch("//www.asiathemall.com/tmallgetprice/tmallres.php", {
                     method: "post",
@@ -49,8 +50,8 @@ const sendajax = async skulist => {
 };
 
 const initdata = async() => {
-    if (window.location.href.indexOf("tmall.com") > -1) {
-        console.log("tmail website");
+    if (window.location.href.indexOf("tmall.com") > -1 || window.location.href.indexOf('95095.com') || window.location.href.indexOf('liangxinyao.com')) {
+        console.log(window.location.href.split('?')[0].split('/')[2], '==========OK===========');
         let html = await document.body.innerHTML;
         var skulist = await html.match(/skuList.*]/);
         if (skulist) {
