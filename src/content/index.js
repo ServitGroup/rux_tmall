@@ -4,7 +4,8 @@ const getCoffee = () => {
         setTimeout(() => resolve("☕"), 1000); // it takes 2 seconds to make coffee
     });
 };
-const sendajax = async skulist => {
+
+async function sendajax(skulist) {
     if (skulist) {
         console.log(
             "--------------------------start ajax---------------------------------------"
@@ -46,53 +47,18 @@ const sendajax = async skulist => {
                 });
         }
     }
-};
+}
 
 const initdata = async() => {
-    if (window.location.href.indexOf("tmall.com") > -1) {
-        console.log("tmail website");
-        // let html = await document.body.innerHTML;
-        // var skulist = await html.match(/skuList.*]/);
-        // if (skulist) {
-        //     console.log(
-        //         "============================== SKULIST =========================================",
-        //         skulist
-        //     );
-
-        //     skulist = await skulist[0].replace('skuList":', "");
-        //     skulist = await JSON.parse(skulist);
-
-        //     let skumaps = await html.match(/skuMap":.*}}/);
-        //     skumaps = await skumaps[0].replace('skuMap":', "");
-        //     skumaps = await skumaps.replace("}}}", "}}");
-        //     skumaps = await JSON.parse(skumaps);
-        //     await skulist.map(s => {
-        //         let map = skumaps[";" + s.pvs + ";"];
-        //         s.price = map.price;
-        //         s.stock = map.stock;
-        //         s.priceCent = map.priceCent;
-        //         s.saleprice = 0;
-        //         s.id = "";
-        //         s.url = "";
-        //     });
-        // }
-
-        // let $ar1 = await document.querySelectorAll(
-        //     "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(1) > dd > ul *> a"
-        // );
-        // let $ar2 = await document.querySelectorAll(
-        //     "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(2) > dd > ul *> a"
-        // );
-        // let $ar3 = await document.querySelectorAll(
-        //     "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl:nth-child(3) > dd > ul *> a"
-        // );
-
-        // const $ar1length = await $ar1.length;
-        // const $ar2length = await $ar2.length;
-        // const $ar3length = await $ar3.length;
-        // let send = 0;
-        // if (skulist) {
-        console.log('---------------START---------------------------');
+    if (
+        window.location.href.indexOf("tmall.com") > -1 ||
+        window.location.href.indexOf("95095.com") ||
+        window.location.href.indexOf("liangxinyao.com")
+    ) {
+        console.log(
+            window.location.href.split("?")[0].split("/")[2],
+            "==========OK==========="
+        );
         let html = await document.body.innerHTML;
         var skulist = await html.match(/skuList.*]/);
         skulist = await skulist[0].replace('skuList":', "");
@@ -112,22 +78,21 @@ const initdata = async() => {
         });
 
         let loc = await window.location.href;
-        let urls = await loc.split('&');
+        let urls = await loc.split("&");
         let idxx = -1;
 
         urls.map((u, idx) => {
-            if (u.indexOf('skuId') == 0) {
-                idxx = idx
+            if (u.indexOf("skuId") == 0) {
+                idxx = idx;
             }
-        })
+        });
 
-        console.log('idxx--', idxx)
+        console.log("idxx--", idxx);
 
         for (let j = 0; j < skulist.length; j++) {
-
-            let a = document.createElement('a')
-            urls[idxx] = 'skuId=' + skulist[j].skuId
-            a.href = urls.join('&')
+            let a = document.createElement("a");
+            urls[idxx] = "skuId=" + skulist[j].skuId;
+            a.href = urls.join("&");
             a.click();
             await getCoffee();
             await getCoffee();
@@ -145,9 +110,8 @@ const initdata = async() => {
                 ).innerText;
             }
         }
-        console.log('-------------------TEST TEST ------------------------------');
+        console.log("-------------------TEST TEST ------------------------------");
         console.table(skulist);
-
 
         // skulist.map(r => {
         //     let a = document.createElement('a')
