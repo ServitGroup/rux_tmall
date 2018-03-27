@@ -34,6 +34,10 @@ $o->msg = 'start';
               $res->sprice1 = isset($row->sprice1) ? $row->sprice1 : 0 ;
               $res->sprice2 = isset($row->sprice2) ? $row->sprice2 : 0 ;
               $res->sprice3 = isset($row->sprice3) ? $row->sprice3 : 0 ;
+              $res->imgpath = isset($row->imgpath) ? $row->imgpath : null;
+              $res->vdopath = isset($row->vdopath) ? $row->vdopath : null;
+              $res->video_thumbnail_left = isset($row->vdopath) ? $row->vdopath : null;
+
               if($row->price){
                 $res->Price = $row->price;
               } else {

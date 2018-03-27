@@ -14,8 +14,8 @@ async function sendajax(skulist) {
             skulist
         );
         let data = {};
-        data.baseurl = await window.location.href.split("&")[0].split("?")[0];
-        let urls = await window.location.href.split("&");
+        data.baseurl = window.location.href.split("&")[0].split("?")[0];
+        let urls = window.location.href.split("&");
         for (let u of urls) {
             if (u.indexOf("id") == 0) {
                 data.baseid = await u.split("=")[1];
@@ -67,11 +67,11 @@ async function getimgvdo() {
     let prices = await document.querySelectorAll('.tm-price');
     if (prices.length > 1) {
         for (let i = 0; i < prices.length; i++) {
-            price['sprice' + i] = await prices[i].innerText;
+            price['price' + i] = await prices[i].innerText;
         }
     } else {
-        price['sprice0'] = await prices[0].innerText;
-        price['sprice1'] = await prices[0].innerText;
+        price['price0'] = await prices[0].innerText;
+        price['price1'] = await prices[0].innerText;
     }
     let rs = { imgpath, vdopath, ...price };
     console.log(rs);
@@ -119,7 +119,7 @@ async function main() {
             });
             console.table(skulist);
         }
-        //------main----------
+
         let lists = await document.querySelectorAll('#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tb-key > div > div > dl');
         let arlength = [0, 0, 0, 0, 0];
         if (lists.length > 0) {
@@ -161,7 +161,7 @@ async function main() {
             listfive = await lists[4].getElementsByTagName('li');
             afive = await lists[4].getElementsByTagName('a');
         }
-        //------main----------
+
         for (let i = 0; i < arlength[0]; i++) {
             if (listone != undefined) {
                 if (listone[i].className.indexOf('tb-selected') == -1) {
@@ -244,12 +244,12 @@ async function main() {
         }
         if (skulist) {
             await skulist.map(slist => {
-                if (!slist.hasOwnProperty('sprice1')) {
-                    Object.assign(slist, { imgpath: '', vdopath: '', sprice0: 0, sprice1: 0 })
+                if (!slist.hasOwnProperty('price1')) {
+                    Object.assign(slist, { imgpath: '', vdopath: '', price0: 0, price1: 0 })
                 }
             })
 
-            if (skulist.length == 1 && skulist[0].sprice1 == 0) {
+            if (skulist.length == 1 && skulist[0].price1 == 0) {
                 let rs = await getimgvdo();
                 let slist = await Object.assign(skulist[0], rs)
                 console.log('slist-->again-->', slist);
@@ -275,9 +275,7 @@ async function main() {
             let rs = await getimgvdo();
             let slist = Object.assign(localskulist, rs)
             console.log('slist--------------->', slist);
-            skulist = [skust];
         }
-        await sendajax(skulist)
     }
 }
 
