@@ -18,6 +18,7 @@ async function sendajax(skulist) {
         let data = {};
         data.baseurl = await window.location.href.split("&")[0].split("?")[0];
         data.title = await document.title;
+        data.url = await window.location.href;
         let urls = await window.location.href.split("&");
         for (let u of urls) {
             if (u.indexOf("id") == 0) {

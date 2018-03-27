@@ -53,9 +53,17 @@ $o->msg = 'start';
               $req->Status = 'Y';
               $req->save();
             }
+            $json->skulist = count($json->skulist);
             $o->data = $json;
             $o->msg = 'successed';
             $o->status = 1;
   }
-  $msg = json_encode($o);
+
+  // $msg = json_encode($o,JSON_UNESCAPED_UNICODE);
+  $msg = "\n";
+  $msg .= "msg:successed\n";
+  $msg .= "url:".$json->url."\n";
+  $msg .= "skulist:".count($json->skulist)."\n";
+  $msg .= "title:".$json->title;
+
   linenotify($msg);
